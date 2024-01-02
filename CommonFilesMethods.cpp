@@ -1,6 +1,7 @@
 #include "CommonFilesMethods.h"
 #include <QFile>
 #include <QDebug>
+#include <QDir>
 
 
 QString CommonFilesMethods::formatFileSize(qint64 size)
@@ -26,6 +27,7 @@ QString CommonFilesMethods::formatFileSize(qint64 size)
 
 bool CommonFilesMethods::compareBinaryFiles(const QString &filePath1, const QString &filePath2)
 {
+    // qDebug() << "compare " <<  filePath1 << "and" << filePath2;
     QFile file1(filePath1);
     QFile file2(filePath2);
 
@@ -46,7 +48,48 @@ bool CommonFilesMethods::compareBinaryFiles(const QString &filePath1, const QStr
 
 bool CommonFilesMethods::compareFileInfo(const QFileInfo &fileInfo1, const QFileInfo &fileInfo2)
 {
+    // qDebug() << "compare " <<  fileInfo1.absoluteFilePath() << "and" << fileInfo2.absoluteFilePath();
     return (fileInfo1.fileName() == fileInfo2.fileName()
             && fileInfo1.size() == fileInfo2.size()
             && fileInfo1.lastModified() == fileInfo2.lastModified());
+}
+
+QStringList CommonFilesMethods::findMatchingFiles(QDir dir1, QDir dir2)
+{
+    qDebug() << __PRETTY_FUNCTION__;
+    QStringList result;
+    if (!dir1.exists()) {
+        qDebug() << "Directory 1 does not exist.";
+        return result;
+    }
+    if (!dir2.exists()) {
+        qDebug() << "Directory 2 does not exist.";
+        return result;
+    }
+
+    QStringList files1 = dir1.entryList(QDir::Files | QDir::NoDotAndDotDot);
+    QStringList files2 = dir2.entryList(QDir::Files | QDir::NoDotAndDotDot);
+
+    // Проходим по каждому файлу в первой директории
+    for (const QString &file1 : files1) {
+        QFileInfo fileInfo1(dir1.filePath(file1));
+         // qDebug() << file1;
+
+        // Проходим по каждому файлу во второй директории
+        for (const QString &file2 : files2) {
+            // qDebug() << file2;
+            QFileInfo fileInfo2(dir2.filePath(file2));
+
+            // Если файлы совпадают по вашему сравнению, добавляем путь файла из dir1 в результат
+            if (compareFileInfo(fileInfo1, fileInfo2)) {
+                if (compareBinaryFiles(fileInfo1.absoluteFilePath(), fileInfo2.absoluteFilePath())) {
+                    // qDebug() << fileInfo1.absoluteFilePath() << "==" << fileInfo2.absoluteFilePath();
+                    result.append(fileInfo1.filePath());
+                    break;  // Выход из цикла, так как нашли совпадение
+                }
+            }
+        }
+    }
+
+     return result;
 }

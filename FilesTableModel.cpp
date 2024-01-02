@@ -13,12 +13,12 @@ FilesTableModel::FilesTableModel(QObject *parent)
         qDebug() << "Directory does not exist.";
     }
 
-    QString file1 = "C:\\Projects\\build-BackuoCleaner-Desktop_Qt_6_5_2_MinGW_64_bit-Debug\\Test1.txt";
-    QString file2 = "C:\\Projects\\build-BackuoCleaner-Desktop_Qt_6_5_2_MinGW_64_bit-Debug\\Test2.txt";
-    QString file3 = "C:\\Projects\\Test1.txt";
+    // QString file1 = "C:\\Projects\\build-BackuoCleaner-Desktop_Qt_6_5_2_MinGW_64_bit-Debug\\Test1.txt";
+    // QString file2 = "C:\\Projects\\build-BackuoCleaner-Desktop_Qt_6_5_2_MinGW_64_bit-Debug\\Test2.txt";
+    // QString file3 = "C:\\Projects\\Test1.txt";
 
-    qDebug() << CommonFilesMethods::compareBinaryFiles(file1,file2);
-    qDebug() << CommonFilesMethods::compareFileInfo(QFileInfo(file1),QFileInfo(file3));
+    // qDebug() << CommonFilesMethods::compareBinaryFiles(file1,file2);
+    // qDebug() << CommonFilesMethods::compareFileInfo(QFileInfo(file1),QFileInfo(file3));
 
 
 
@@ -26,10 +26,15 @@ FilesTableModel::FilesTableModel(QObject *parent)
 
     // Set the filter to list only files
     m_directory.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-    m_fileList = m_directory.entryList();
-//    foreach (QString file, m_fileList) {
-//        qDebug() << file;
-//    }
+
+    QString dir1 = "C:\\Projects\\build-BackuoCleaner-Desktop_Qt_6_5_2_MinGW_64_bit-Debug";
+    QString dir2 = "C:\\Projects\\tets";
+    m_fileList = CommonFilesMethods::findMatchingFiles(QDir(dir1),QDir(dir2));
+    // m_fileList = m_directory.entryList();
+
+   // foreach (QString file, m_fileList) {
+   //     qDebug() << file;
+   // }
 }
 
 int FilesTableModel::rowCount(const QModelIndex &) const //TODO sizetype
@@ -54,12 +59,14 @@ QVariant FilesTableModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     QString file = m_fileList.at(row);
-    if (col == ColumnName)
-        return file;
+    // if (col == ColumnName)
+    //     return file;
     QString filePath = m_directory.filePath(file);
     QFileInfo fileInfo(filePath);
     switch (col)
     {
+    case ColumnName:
+        return fileInfo.fileName();
     case ColumnSize:
         return CommonFilesMethods::formatFileSize(fileInfo.size());
     case ColumnModifiDate:

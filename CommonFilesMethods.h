@@ -11,5 +11,6 @@ namespace CommonFilesMethods
     QString formatFileSize(qint64 size);
     bool compareFileInfo(const QFileInfo &fileInfo1, const QFileInfo &fileInfo2);
     bool compareBinaryFiles(const QString &filePath1, const QString &filePath2);
+    QStringList findMatchingFiles(QDir dir1, QDir dir2);
 
 }
