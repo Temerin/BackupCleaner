@@ -1,4 +1,5 @@
 #include "FilesTableModel.h"
+#include "CommonFilesMethods.h"
 
 
 FilesTableModel::FilesTableModel(QObject *parent)
@@ -7,12 +8,21 @@ FilesTableModel::FilesTableModel(QObject *parent)
     m_columnNames << tr("Name") << tr("Size") << tr("Modified Date");
 
 
-
-
     // Check if the directory exists
     if (!m_directory.exists()) {
         qDebug() << "Directory does not exist.";
     }
+
+    QString file1 = "C:\\Projects\\build-BackuoCleaner-Desktop_Qt_6_5_2_MinGW_64_bit-Debug\\Test1.txt";
+    QString file2 = "C:\\Projects\\build-BackuoCleaner-Desktop_Qt_6_5_2_MinGW_64_bit-Debug\\Test2.txt";
+    QString file3 = "C:\\Projects\\Test1.txt";
+
+    qDebug() << CommonFilesMethods::compareBinaryFiles(file1,file2);
+    qDebug() << CommonFilesMethods::compareFileInfo(QFileInfo(file1),QFileInfo(file3));
+
+
+
+
 
     // Set the filter to list only files
     m_directory.setFilter(QDir::Files | QDir::NoDotAndDotDot);
@@ -51,9 +61,9 @@ QVariant FilesTableModel::data(const QModelIndex &index, int role) const
     switch (col)
     {
     case ColumnSize:
-        return QString::number(fileInfo.size()) + " B";
+        return CommonFilesMethods::formatFileSize(fileInfo.size());
     case ColumnModifiDate:
-        return fileInfo.lastModified().toString("dd.MM.yyyy");
+        return fileInfo.lastModified().toString("dd.MM.yyyy HH:mm:ss");
     }
 
     return QVariant();

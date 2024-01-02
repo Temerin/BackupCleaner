@@ -18,6 +18,8 @@ qt_add_qml_module(appBackupCleaner
     URI BackupCleaner
     VERSION 1.0
     QML_FILES Main.qml ResizableColumnsTableView.qml
+    SOURCES
+    SOURCES CommonFilesMethods.h CommonFilesMethods.cpp
 )
 
 set_target_properties(appBackupCleaner PROPERTIES

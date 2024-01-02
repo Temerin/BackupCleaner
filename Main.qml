@@ -34,7 +34,7 @@ Window {
             Layout.fillHeight: true
             Layout.fillWidth: true
             model: FilesTableModel {}
-            columnWidths: [250, 200, 100]
+            columnWidths: [250, 200, 120]
         }
 
 //        RowLayout {
