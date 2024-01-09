@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QDir>
+#include <QRegularExpression>
 
 
 QString CommonFilesMethods::formatFileSize(qint64 size)
@@ -92,4 +93,64 @@ QStringList CommonFilesMethods::findMatchingFiles(QDir dir1, QDir dir2)
     }
 
      return result;
+}
+
+QStringList CommonFilesMethods::getAllFilesInDirectory(const QDir &dir)
+{
+    // qDebug() << "getAllFilesInDirectory! " << dir.filesystemCanonicalPath();
+    QStringList fileList;
+
+    // Получаем список всех файлов в текущей директории
+    QStringList currentDirFiles = dir.entryList(QDir::Files);
+    for (const QString &file : currentDirFiles) {
+        fileList.append(dir.filePath(file));
+    }
+
+    // Получаем список всех поддиректорий в текущей директории
+    QStringList subdirs = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    QRegularExpression lnkRegex("\\.lnk$", QRegularExpression::CaseInsensitiveOption);
+    subdirs.erase(std::remove_if(subdirs.begin(), subdirs.end(),
+                                     [&lnkRegex](const QString &dir) {
+                                         return lnkRegex.match(dir).hasMatch();
+                                     }),
+                      subdirs.end());
+    for (const QString &subdir : subdirs) {
+        QDir subdirectory = dir;
+        subdirectory.cd(subdir);
+        // Рекурсивно вызываем эту функцию для поддиректории
+        // qDebug() << "SUBDIR!!!" << subdir;
+        QStringList filesInSubdir = getAllFilesInDirectory(subdirectory);
+        fileList.append(filesInSubdir);
+    }
+
+    return fileList;
+}
+
+QStringList removeDuplicates(const QStringList &inputList)
+{
+    QSet<QString> uniqueSet;
+    QStringList result;
+
+    for (const QString &filePath : inputList) {
+        QFileInfo fileInfo(filePath);
+        QString canonicalPath = fileInfo.canonicalFilePath();
+
+        if (uniqueSet.contains(canonicalPath)) {
+            continue;  // Пропускаем дубликаты
+        }
+
+        result.append(filePath);
+        uniqueSet.insert(canonicalPath);
+    }
+
+    return result;
+}
+
+QStringList CommonFilesMethods::recursiveFindMatchingFiles(QDir dir)
+{
+    QStringList fileList = getAllFilesInDirectory(dir);
+    qDebug() << fileList.size();
+    fileList = removeDuplicates(fileList);
+    qDebug() << fileList.size();
+    return fileList;
 }

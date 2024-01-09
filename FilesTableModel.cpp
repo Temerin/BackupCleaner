@@ -28,8 +28,16 @@ FilesTableModel::FilesTableModel(QObject *parent)
     m_directory.setFilter(QDir::Files | QDir::NoDotAndDotDot);
 
     QString dir1 = "C:\\Projects\\build-BackuoCleaner-Desktop_Qt_6_5_2_MinGW_64_bit-Debug";
-    QString dir2 = "C:\\Projects\\tets";
-    m_fileList = CommonFilesMethods::findMatchingFiles(QDir(dir1),QDir(dir2));
+    QString dir2 = "C:\\Users\\Miron\\";
+    QString dir3 = "C:\\";
+    // m_fileList = CommonFilesMethods::getAllFilesInDirectory(QDir(dir3));
+    m_fileList = CommonFilesMethods::recursiveFindMatchingFiles(QDir(dir3));
+    // qDebug() << "Список всех файлов в директории и ее поддиректориях:";
+    // for (const QString &file : m_fileList) {
+    //     qDebug() << file;
+    // }
+
+    // m_fileList = CommonFilesMethods::findMatchingFiles(QDir(dir1),QDir(dir2));
     // m_fileList = m_directory.entryList();
 
    // foreach (QString file, m_fileList) {
